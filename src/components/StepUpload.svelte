@@ -1,6 +1,6 @@
 <script>
   import Dropzone from "svelte-file-dropzone";
-  import { setAppStatusError, setAppStatusLoading } from "../store";
+  import { setAppStatusChatMode, setAppStatusError, setAppStatusLoading } from "../store";
 
   let files = {
     accepted: [],
@@ -23,14 +23,17 @@
         body: formData,
       });
 
+      console.log('res', res)
+
 
       if(!res.ok) {
         setAppStatusError();
         return;
       };
 
-      const result = await res.json();
-      setAppStatusChatMode(result);
+      const {id, url, pages} = await res.json();
+      console.log(id, url, pages);
+      setAppStatusChatMode({id, url, pages});
 
 
     }
