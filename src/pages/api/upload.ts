@@ -1,4 +1,7 @@
 import type { APIRoute } from "astro";
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
 import { v2 as cloudinary, type UploadApiResponse } from 'cloudinary';
 
 cloudinary.config({
@@ -7,8 +10,11 @@ cloudinary.config({
   api_secret: import.meta.env.CLOUDINARY_API_SECRET
 });
 
+const outputDir = path.join(process.cwd(), 'public/text');
+
 const uploadStream = async (buffer: Uint8Array, options: { 
-  folder: string 
+  folder: string,
+  ocr?: string,
 }): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
     cloudinary
@@ -43,14 +49,32 @@ export const POST: APIRoute = async ({ request }) => {
   // Upload the file as a stream to the 'pdf' folder
   const result = await uploadStream(uint8Array, {
     folder: 'pdf',
+    ocr: 'adv_ocr',
   });
 
   // Destructure the result to get the asset id, secure URL, and number of pages
   const {
     asset_id: id,
     secure_url: url,
-    pages
+    pages,
+    info
   } = result;
+
+  const data = info?.ocr?.adv_ocr?.data;
+
+  // Return content from the first object of textAnnotations array
+  const text = data.map((blocks : { textAnnotations: { description: string }[] }) => {
+    const annotations = blocks['textAnnotations'] ?? {};
+    const first = annotations[0] ?? {};
+    const content = first['description'] ?? '';
+
+    return content.trim();
+  }).filter(Boolean).join('\n');
+
+  console.log('text: ', text);
+
+  // Write the text to a file in the 'text' folder
+  fs.writeFile(`${outputDir}/${id}.txt`, text, 'utf-8');
 
   // Simulate delay for 1 second
   await new Promise(resolve => setTimeout(resolve, 1000));

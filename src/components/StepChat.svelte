@@ -1,6 +1,6 @@
 <script>
   import { Input, Label, Spinner } from 'flowbite-svelte';
-  import { appStatusInfo } from '../store';
+  import { appStatusInfo, setAppStatusError } from '../store';
   const { id, url, pages } = $appStatusInfo;
 
   let answer = '';
@@ -21,26 +21,33 @@
 
     const question = event.target.question.value;
 
-    const res = await fetch('/api/ask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id,
-        question,
-      })
-    });
-
-    if (!res.ok) {
-      console.error('Error asking the question');
+    // el error del catch es si hay un error en la api y el de !res.ok es si hay un error en la respuesta del fetch
+    try {
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id,
+          question,
+        })
+      });
+  
+      if (!res.ok) {
+        console.error('Error asking the question');
+        return;
+      };
+  
+      const { answer: apiAnswer } = await res.json();
+      answer = apiAnswer;
+      
+    } catch (error) {
+      setAppStatusError();
+    } finally {
       loading = false;
-      return;
-    };
+    }
 
-    const { answer: apiAnswer } = await res.json();
-    answer = apiAnswer;
-    loading = false;
   }
 </script>
 

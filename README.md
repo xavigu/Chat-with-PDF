@@ -51,7 +51,7 @@ All commands are run from the root of the project, from a terminal:
 
 ## 👀 Tools
 
-- Cloudinary, Images hosting (logged with Google)
+- Cloudinary like images hosting (logged with Google and active OCR in addons section to pass images to text)
 - Tailwindcss `npx astro add tailwind`
 - Svelte `npx astro add svelte`
 - Flowbite Svelte (UI components library of Svelte) [https://flowbite-svelte.com]

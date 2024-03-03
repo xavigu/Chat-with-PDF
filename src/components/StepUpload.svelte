@@ -23,9 +23,6 @@
         body: formData,
       });
 
-      console.log('res', res)
-
-
       if(!res.ok) {
         setAppStatusError();
         return;
@@ -34,8 +31,6 @@
       const {id, url, pages} = await res.json();
       console.log(id, url, pages);
       setAppStatusChatMode({id, url, pages});
-
-
     }
   }
 </script>
