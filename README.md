@@ -52,6 +52,7 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Tools
 
 - Cloudinary like images hosting (logged with Google and active OCR in addons section to pass images to text)
+- OpenAI (generate API Key to use it): [https://platform.openai.com/api-keys] Need pay to use it
 - Tailwindcss `npx astro add tailwind`
 - Svelte `npx astro add svelte`
 - Flowbite Svelte (UI components library of Svelte) [https://flowbite-svelte.com]
