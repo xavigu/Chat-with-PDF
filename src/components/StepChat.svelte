@@ -18,6 +18,7 @@
   const handleSubmit = async(event) => {
     event.preventDefault();
     loading = true;
+    answer = '';
 
     const question = event.target.question.value;
 
@@ -28,20 +29,20 @@
 
     // el error del catch es si hay un error en la api y el de !res.ok es si hay un error en la respuesta del fetch
     try {
-      const res = await fetch(`/api/ask?${searchParams.toString()}`, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-  
-      if (!res.ok) {
-        console.error('Error asking the question');
-        return;
+      const eventSource = new EventSource(`/api/ask?${searchParams.toString()}`);
+
+      // cada vez que al eventSource le llegue un mensaje
+      eventSource.onmessage = (event) => {
+        loading = false;
+        const incomingData = JSON.parse(event.data);
+
+        if (incomingData === '__END__') {
+          eventSource.close();
+          return;
+        };
+
+        answer += incomingData;
       };
-  
-      const { response } = await res.json();
-      console.log('response', response);
-      answer = response;
       
     } catch (error) {
       setAppStatusError();
